@@ -1,0 +1,4 @@
+directory: /home/hsy/ws/robosuite-benchmark/rlkit/rlkit/..
+git hash: b7f97b2463df1c5a1ecd2d293cfcc7a4971dd0ab
+git branch name: master
+
