@@ -245,7 +245,7 @@ class SACTrainer(TorchTrainer):
             distance = self.pdist(obs[index],obs[index+self.tdrp_step+1:index+2*self.tdrp_step+1])
             distance = 1-distance
             loss += torch.where(distance>torch.zeros_like(distance), distance, torch.zeros_like(distance)).sum()
-
+            index -= 1
         tdrp_loss = self.tdrp_criterion(loss, torch.zeros_like(loss))
         self.tdrp_optimizer.zero_grad()
         tdrp_loss.backward()
