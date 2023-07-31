@@ -220,10 +220,10 @@ class SACTrainer(TorchTrainer):
         self._n_train_steps_total += 1
 
     def train_tdrp_from_torch(self, batch):
-        batch = np_to_pytorch_batch(batch)
-
-        rewards = batch['rewards']
         terminals = batch['terminals']
+        batch = np_to_pytorch_batch(batch)
+        rewards = batch['rewards']
+
         obs = batch['observations']
         actions = batch['actions']
         next_obs = batch['next_observations']
