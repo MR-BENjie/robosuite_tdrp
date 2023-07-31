@@ -252,7 +252,7 @@ class SACTrainer(TorchTrainer):
         self.tdrp_optimizer.step()
 
         if self._need_to_update_eval_statistics:
-            self.eval_statistics['tdrp Loss'] = loss.cpu().numpy()
+            self.eval_statistics['tdrp Loss'] = loss.cpu().detach().numpy()
 
     def get_diagnostics(self):
         return self.eval_statistics
