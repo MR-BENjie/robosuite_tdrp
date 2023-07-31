@@ -124,6 +124,7 @@ def rollout(
         if render:
             env.render(**render_kwargs)
 
+
     actions = np.array(actions)
     if len(actions.shape) == 1:
         actions = np.expand_dims(actions, 1)

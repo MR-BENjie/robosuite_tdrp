@@ -38,6 +38,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._top = 0
         self._size = 0
 
+        self._tdrp_index=0
+
     def add_sample(self, observation, action, reward, next_observation,
                    terminal, env_info, **kwargs):
         self._observations[self._top] = observation
@@ -71,7 +73,23 @@ class SimpleReplayBuffer(ReplayBuffer):
             assert key not in batch.keys()
             batch[key] = self._env_infos[key][indices]
         return batch
-
+    def horizon_bath(self, horizon_length):
+        max_index = min(self._size, self._tdrp_index+horizon_length)
+        if max_index-self._tdrp_index < horizon_length/3:
+            self._tdrp_index=0
+            return None
+        batch = dict(
+            observations=self._observations[self._tdrp_index:max_index],
+            actions=self._actions[self._tdrp_index:max_index],
+            rewards=self._rewards[self._tdrp_index:max_index],
+            terminals=self._terminals[self._tdrp_index:max_index],
+            next_observations=self._next_obs[self._tdrp_index:max_index],
+        )
+        if max_index== self._size:
+            self._tdrp_index = 0
+        else:
+            self._tdrp_index=max_index
+        return batch
     def rebuild_env_info_dict(self, idx):
         return {
             key: self._env_infos[key][idx]

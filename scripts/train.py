@@ -27,6 +27,9 @@ def run_experiment():
     trainer_kwargs = None
     if args.agent == "SAC":
         trainer_kwargs = dict(
+            train_tdrp=args.train_tdrp,
+            auxiliary_reward=args.auxiliary_reward,
+            tdrp_step = args.tdrp_step,
             discount=args.gamma,
             soft_target_tau=args.soft_target_tau,
             target_update_period=args.target_update_period,
@@ -62,6 +65,8 @@ def run_experiment():
                 hidden_sizes=args.policy_hidden_sizes,
             ),
             algorithm_kwargs=dict(
+                train_tdrp=args.train_tdrp,
+                auxiliary_reward=args.auxiliary_reward,
                 num_epochs=args.n_epochs,
                 num_eval_steps_per_epoch=args.eval_horizon * args.num_eval,
                 num_trains_per_train_loop=args.trains_per_train_loop,

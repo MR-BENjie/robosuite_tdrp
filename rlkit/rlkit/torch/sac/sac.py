@@ -8,7 +8,7 @@ from torch import nn as nn
 import rlkit.torch.pytorch_util as ptu
 from rlkit.core.eval_util import create_stats_ordered_dict
 from rlkit.torch.torch_rl_algorithm import TorchTrainer
-
+from rlkit.torch.core import np_to_pytorch_batch
 
 class SACTrainer(TorchTrainer):
     def __init__(
@@ -19,6 +19,11 @@ class SACTrainer(TorchTrainer):
             qf2,
             target_qf1,
             target_qf2,
+            tdrp=None,
+
+            train_tdrp=False,
+            auxiliary_reward=False,
+            tdrp_step=10,
 
             discount=0.99,
             reward_scale=1.0,
@@ -44,6 +49,8 @@ class SACTrainer(TorchTrainer):
         self.target_qf2 = target_qf2
         self.soft_target_tau = soft_target_tau
         self.target_update_period = target_update_period
+
+        self.tdrp = tdrp
 
         self.use_automatic_entropy_tuning = use_automatic_entropy_tuning
         if self.use_automatic_entropy_tuning:
@@ -76,12 +83,24 @@ class SACTrainer(TorchTrainer):
             lr=qf_lr,
         )
 
+        if train_tdrp:
+            self.tdrp_criterion = nn.MSELoss()
+            self.tdrp_optimizer = optimizer_class(
+                self.tdrp.parameters(),
+                lr = qf_lr,
+            )
+
         self.discount = discount
         self.reward_scale = reward_scale
         self.eval_statistics = OrderedDict()
         self._n_train_steps_total = 0
         self._need_to_update_eval_statistics = True
 
+        self.train_tdrp=train_tdrp
+        self.auxiliary_reward=auxiliary_reward
+        self.tdrp_step = tdrp_step
+
+        self.pdist = torch.nn.PairwiseDistance(p=2)
     def train_from_torch(self, batch):
         rewards = batch['rewards']
         terminals = batch['terminals']
@@ -200,6 +219,45 @@ class SACTrainer(TorchTrainer):
                 self.eval_statistics['Alpha Loss'] = alpha_loss.item()
         self._n_train_steps_total += 1
 
+    def train_tdrp_from_torch(self, batch):
+        self._num_train_steps += 1
+        batch = np_to_pytorch_batch(batch)
+
+        rewards = batch['rewards']
+        terminals = batch['terminals']
+        obs = batch['observations']
+        actions = batch['actions']
+        next_obs = batch['next_observations']
+
+        obs = self.tdrp(obs)
+
+        index = len(terminals) - self.tdrp_step-1
+        count = 0
+        loss = torch.zeros((1))
+        while index>=0:
+            if terminals[index:index+self.tdrp_step].any():
+                index -= 1
+                continue
+            loss += self.pdist(obs[index], obs[index+1:index+self.tdrp_step+1]).sum()
+            index-=1
+
+        index = len(terminals)-2*self.tdrp_step-1
+        while index >= 0:
+            distance = self.pdist(obs[index],obs[index+self.tdrp+1:index+2*self.tdrp_step+1])
+            distance = 1-distance
+            loss += torch.where(distance>torch.zeros_like(distance), distance, torch.zeros_like(distance)).sum()
+
+        tdrp_loss = self.tdrp_criterion(loss, torch.zeros_like(loss))
+        self.tdrp_optimizer.zero_grad()
+        tdrp_loss.backward()
+        self.tdrp_optimizer.step()
+        if self._need_to_update_eval_statistics:
+            """
+            Eval should set this to None.
+            This way, these statistics are only computed for one batch.
+            """
+            self.eval_statistics['tdrp Loss'] = np.array(loss)
+
     def get_diagnostics(self):
         return self.eval_statistics
 
@@ -223,5 +281,5 @@ class SACTrainer(TorchTrainer):
             qf2=self.qf2,
             target_qf1=self.qf1,
             target_qf2=self.qf2,
+            tdrp=self.tdrp,
         )
-

@@ -99,6 +99,7 @@ def add_agent_args():
         default="SAC",
         choices=AGENTS,
         help='Agent to use for training')
+
     parser.add_argument(
         '--qf_hidden_sizes',
         nargs="+",
@@ -166,6 +167,24 @@ def add_training_args():
     Adds training parameters used during the experiment run
     """
     parser.add_argument(
+        '--train_tdrp',
+        type=bool,
+        default=False,
+        help='whether to tdrp')
+
+    parser.add_argument(
+        '--auxiliary_reward',
+        type=bool,
+        default=False,
+        help='whether to use auxiliary reward created by tdrp')
+
+    parser.add_argument(
+        '--tdrp_step',
+        type=int,
+        default=10,
+        help='step for training tdrp')
+
+    parser.add_argument(
         '--variant',
         type=str,
         default=None,
@@ -173,7 +192,7 @@ def add_training_args():
     parser.add_argument(
         '--n_epochs',
         type=int,
-        default=2000,
+        default=1500,
         help='Number of epochs to run')
     parser.add_argument(
         '--trains_per_train_loop',
