@@ -242,7 +242,7 @@ class SACTrainer(TorchTrainer):
 
         index = len(terminals)-2*self.tdrp_step-1
         while index >= 0:
-            distance = self.pdist(obs[index],obs[index+self.tdrp+1:index+2*self.tdrp_step+1])
+            distance = self.pdist(obs[index],obs[index+self.tdrp_step+1:index+2*self.tdrp_step+1])
             distance = 1-distance
             loss += torch.where(distance>torch.zeros_like(distance), distance, torch.zeros_like(distance)).sum()
 
