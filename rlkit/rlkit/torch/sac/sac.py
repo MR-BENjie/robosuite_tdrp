@@ -232,7 +232,7 @@ class SACTrainer(TorchTrainer):
 
         index = len(terminals) - self.tdrp_step-1
         count = 0
-        loss = torch.zeros((1))
+        loss = torch.zeros((1)).to(ptu.device)
         while index>=0:
             if terminals[index:index+self.tdrp_step].any():
                 index -= 1
