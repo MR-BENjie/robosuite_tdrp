@@ -19,7 +19,7 @@ class SACTrainer(TorchTrainer):
             qf2,
             target_qf1,
             target_qf2,
-            tdrp=None,
+            tdrp,
 
             train_tdrp=False,
             auxiliary_reward=False,
@@ -220,7 +220,6 @@ class SACTrainer(TorchTrainer):
         self._n_train_steps_total += 1
 
     def train_tdrp_from_torch(self, batch):
-        self._num_train_steps += 1
         batch = np_to_pytorch_batch(batch)
 
         rewards = batch['rewards']
@@ -251,11 +250,8 @@ class SACTrainer(TorchTrainer):
         self.tdrp_optimizer.zero_grad()
         tdrp_loss.backward()
         self.tdrp_optimizer.step()
+
         if self._need_to_update_eval_statistics:
-            """
-            Eval should set this to None.
-            This way, these statistics are only computed for one batch.
-            """
             self.eval_statistics['tdrp Loss'] = np.array(loss)
 
     def get_diagnostics(self):
@@ -272,6 +268,7 @@ class SACTrainer(TorchTrainer):
             self.qf2,
             self.target_qf1,
             self.target_qf2,
+            self.tdrp
         ]
 
     def get_snapshot(self):
