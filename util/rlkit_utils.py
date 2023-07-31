@@ -110,7 +110,7 @@ def experiment(variant, agent="SAC"):
             qf2=qf2,
             target_qf1=target_qf1,
             target_qf2=target_qf2,
-            tdrp = tdrp
+            tdrp = tdrp,
             **variant['trainer_kwargs']
         )
     elif agent == "TD3":
