@@ -246,7 +246,7 @@ class SACTrainer(TorchTrainer):
             distance = 1-distance
             loss += torch.where(distance>torch.zeros_like(distance), distance, torch.zeros_like(distance).to(ptu.device)).sum()
             index -= 1
-        tdrp_loss = self.tdrp_criterion(loss, torch.zeros_like(loss))
+        tdrp_loss = self.tdrp_criterion(loss, torch.zeros_like(loss).to(ptu.device))
         self.tdrp_optimizer.zero_grad()
         tdrp_loss.backward()
         self.tdrp_optimizer.step()
