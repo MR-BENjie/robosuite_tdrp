@@ -432,6 +432,7 @@ def rollout(
     while path_length < max_path_length:
         a, agent_info = agent.get_action(o)
         next_o, r, d, env_info = env.step(a)
+        env_info["success"] = env._check_success()
         observations.append(o)
         rewards.append(r)
         terminals.append(d)

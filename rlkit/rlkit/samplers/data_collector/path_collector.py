@@ -3,7 +3,10 @@ from collections import deque, OrderedDict
 from rlkit.core.eval_util import create_stats_ordered_dict
 from rlkit.samplers.rollout_functions import rollout, multitask_rollout
 from rlkit.samplers.data_collector.base import PathCollector
-
+import torch
+import os
+from kmeans_pytorch import kmeans
+import rlkit.torch.pytorch_util as ptu
 
 class MdpPathCollector(PathCollector):
     def __init__(
@@ -13,6 +16,9 @@ class MdpPathCollector(PathCollector):
             max_num_epoch_paths_saved=None,
             render=False,
             render_kwargs=None,
+            auxiliary_reward=False,
+            tdrp=None,
+            log_dir="../log/runs",
     ):
         if render_kwargs is None:
             render_kwargs = {}
@@ -25,6 +31,24 @@ class MdpPathCollector(PathCollector):
 
         self._num_steps_total = 0
         self._num_paths_total = 0
+
+        self.auxiliary_reward = auxiliary_reward
+        self.tdrp = tdrp
+        self.log_dir = log_dir
+        self.goal_centers = None
+        if self.auxiliary_reward:
+            paths = torch.load(os.path.join(self.log_dir,"path.pkl"))
+            goal_state = list()
+            for path in paths:
+                if (path["env_infos"][-1]["success"]):
+                    goal_state.append(self.tdrp(torch.tensor(path["observations"][-1]).to(ptu.device)))
+            print("------------------------")
+            print("goal state set length:%d"%len(goal_state))
+            print("------------------------")
+            cluster_num = 10
+            cluster_ids_x, cluster_centers = kmeans(X=torch.vstack(goal_state), num_clusters=cluster_num, distance='euclidean', device=torch.device(ptu.device))
+            self.goal_centers = cluster_centers
+
 
     def collect_new_paths(
             self,
@@ -43,6 +67,9 @@ class MdpPathCollector(PathCollector):
                 self._env,
                 self._policy,
                 max_path_length=max_path_length_this_loop,
+                auxiliary_reward=self.auxiliary_reward,
+                goal_set=self.goal_centers,
+                tdrp=self.tdrp
             )
             path_len = len(path['actions'])
             if (

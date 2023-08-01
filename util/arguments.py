@@ -185,6 +185,12 @@ def add_training_args():
         help='step for training tdrp')
 
     parser.add_argument(
+        '--tdrp_pkl',
+        type=str,
+        default="../log/tdrp/",
+        help='step for training tdrp')
+
+    parser.add_argument(
         '--variant',
         type=str,
         default=None,

@@ -1,5 +1,6 @@
 import numpy as np
-
+import torch.nn
+import rlkit.torch.pytorch_util as ptu
 
 def multitask_rollout(
         env,
@@ -72,6 +73,15 @@ def multitask_rollout(
         full_observations=dict_obs,
     )
 
+def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
+    pdist = torch.nn.PairwiseDistance(p=2)
+    obs = tdrp(torch.unsqueeze(torch.tensor(obs),dim=0).to(ptu.device))
+    min_distance = pdist(obs, goal_set[0])
+    for state in goal_set:
+        distance = pdist(obs, state)
+        if distance<min_distance:
+            min_distance = distance
+    return reward-min_distance
 
 def rollout(
         env,
@@ -79,6 +89,9 @@ def rollout(
         max_path_length=np.inf,
         render=False,
         render_kwargs=None,
+        auxiliary_reward=False,
+        goal_set=None,
+        tdrp=None,
 ):
     """
     The following value for the following keys will be a 2D array, with the
@@ -111,6 +124,8 @@ def rollout(
     while path_length < max_path_length:
         a, agent_info = agent.get_action(o)
         next_o, r, d, env_info = env.step(a)
+        if auxiliary_reward:
+            r = cal_auxiliary_reward(tdrp, goal_set, o, r)
         observations.append(o)
         rewards.append(r)
         terminals.append(d)

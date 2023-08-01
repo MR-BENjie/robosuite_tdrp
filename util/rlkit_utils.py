@@ -22,7 +22,7 @@ from robosuite.wrappers import GymWrapper
 from robosuite.controllers import load_controller_config, ALL_CONTROLLERS
 
 import numpy as np
-
+import os
 
 # Define agents available
 AGENTS = {"SAC", "TD3"}
@@ -77,6 +77,11 @@ def experiment(variant, agent="SAC"):
         output_size= int(obs_dim*2/3),
         **variant['qf_kwargs'],
     )
+
+    if variant['trainer_kwargs']['auxiliary_reward']:
+        map_location = torch.device("cuda")
+        tdrp_param = torch.load(os.path.join(variant["trainer_kwargs"]["tdrp_pkl"],"params.pkl"),map_location=map_location)
+        tdrp = tdrp_param["trainer/tdrp"]
 
 
     target_qf1 = FlattenMlp(
@@ -152,10 +157,16 @@ def experiment(variant, agent="SAC"):
     eval_path_collector = MdpPathCollector(
         eval_env,
         eval_policy,
+        auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
+        tdrp=tdrp,
+        log_dir=variant["trainer_kwargs"]["tdrp_pkl"]
     )
     expl_path_collector = MdpPathCollector(
         expl_env,
         expl_policy,
+        auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
+        tdrp=tdrp,
+        log_dir=variant["trainer_kwargs"]["tdrp_pkl"]
     )
 
     # Define algorithm
@@ -261,6 +272,7 @@ def simulate_policy(
     # Create var to denote how many episodes we're at
     ep = 0
 
+    paths = []
     # Loop through simulation rollouts
     while ep < num_episodes:
         if printout:
@@ -272,7 +284,7 @@ def simulate_policy(
             render=render,
             video_writer=video_writer,
         )
-
+        paths.append(path)
         # Log diagnostics if supported by env
         if hasattr(env, "log_diagnostics"):
             env.log_diagnostics([path])
@@ -280,3 +292,4 @@ def simulate_policy(
 
         # Increment episode count
         ep += 1
+    return paths

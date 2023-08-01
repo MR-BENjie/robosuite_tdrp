@@ -30,6 +30,8 @@ def run_experiment():
             train_tdrp=args.train_tdrp,
             auxiliary_reward=args.auxiliary_reward,
             tdrp_step = args.tdrp_step,
+            tdrp_pkl = args.tdrp_pkl,
+
             discount=args.gamma,
             soft_target_tau=args.soft_target_tau,
             target_update_period=args.target_update_period,

@@ -96,7 +96,7 @@ if __name__ == "__main__":
     env = GymWrapper(env_suite, keys=keys)
 
     # Run rollout
-    simulate_policy(
+    paths = simulate_policy(
         env=env,
         model_path=os.path.join(args.load_dir, "params.pkl"),
         horizon=env_args["horizon"],
@@ -106,3 +106,4 @@ if __name__ == "__main__":
         printout=True,
         use_gpu=args.gpu,
     )
+    torch.save(paths, os.path.join(args.load_dir, "path.pkl"))

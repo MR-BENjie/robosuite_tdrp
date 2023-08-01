@@ -10,6 +10,8 @@ from rlkit.core.eval_util import create_stats_ordered_dict
 from rlkit.torch.torch_rl_algorithm import TorchTrainer
 from rlkit.torch.core import np_to_pytorch_batch
 
+from kmeans_pytorch import kmeans
+import os
 class SACTrainer(TorchTrainer):
     def __init__(
             self,
@@ -24,6 +26,7 @@ class SACTrainer(TorchTrainer):
             train_tdrp=False,
             auxiliary_reward=False,
             tdrp_step=10,
+            tdrp_pkl="../log/runs",
 
             discount=0.99,
             reward_scale=1.0,
@@ -99,6 +102,7 @@ class SACTrainer(TorchTrainer):
         self.train_tdrp=train_tdrp
         self.auxiliary_reward=auxiliary_reward
         self.tdrp_step = tdrp_step
+        self.tdrp_pkl= tdrp_pkl
 
         self.pdist = torch.nn.PairwiseDistance(p=2)
     def train_from_torch(self, batch):
