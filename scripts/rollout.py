@@ -101,7 +101,7 @@ if __name__ == "__main__":
         model_path=os.path.join(args.load_dir, "params.pkl"),
         horizon=env_args["horizon"],
         render=not args.record_video,
-        video_writer=video_writer,
+        video_writer=None,
         num_episodes=args.num_episodes,
         printout=True,
         use_gpu=args.gpu,
