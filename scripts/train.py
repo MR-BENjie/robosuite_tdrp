@@ -56,6 +56,7 @@ def run_experiment():
     # Construct variant to train
     if args.variant is None:
         variant = dict(
+            model_weights=args.model_weights,
             algorithm=args.agent,
             seed=args.seed,
             version="normal",

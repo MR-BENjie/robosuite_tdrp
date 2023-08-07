@@ -191,6 +191,12 @@ def add_training_args():
         help='step for training tdrp')
 
     parser.add_argument(
+        '--model_weights',
+        type=str,
+        default= "",
+        help='load model weights')
+
+    parser.add_argument(
         '--variant',
         type=str,
         default=None,

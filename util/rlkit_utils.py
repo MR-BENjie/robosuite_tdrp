@@ -107,7 +107,16 @@ def experiment(variant, agent="SAC"):
             action_dim=action_dim,
             **variant['policy_kwargs'],
         )
+
+        if variant["model_weights"] != "":
+            param = torch.load(variant["model_weights"])
+            expl_policy = param["policy"]
+            qf1 = param["qf1"]
+            qf2 = param["qf2"]
+            target_qf1 = param["qf1"]
+            target_qf2 = param["qf2"]
         eval_policy = MakeDeterministic(expl_policy)
+        
         trainer = SACTrainer(
             env=eval_env,
             policy=expl_policy,
