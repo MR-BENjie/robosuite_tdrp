@@ -46,7 +46,7 @@ class MdpPathCollector(PathCollector):
             print("goal state set length:%d"%len(goal_state))
             print("------------------------")
             cluster_num = 10
-            cluster_ids_x, cluster_centers = kmeans(X=torch.vstack(goal_state), num_clusters=cluster_num, distance='euclidean', device=torch.device(ptu.device))
+            cluster_ids_x, cluster_centers = kmeans(X=torch.cat(goal_state,dim=0), num_clusters=cluster_num, distance='euclidean', device=torch.device(ptu.device))
             self.goal_centers = cluster_centers
 
 
