@@ -116,7 +116,7 @@ def experiment(variant, agent="SAC"):
             target_qf1 = param["qf1"]
             target_qf2 = param["qf2"]
         eval_policy = MakeDeterministic(expl_policy)
-        
+
         trainer = SACTrainer(
             env=eval_env,
             policy=expl_policy,

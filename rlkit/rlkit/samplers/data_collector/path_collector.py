@@ -41,7 +41,7 @@ class MdpPathCollector(PathCollector):
             goal_state = list()
             for path in paths:
                 if (path["env_infos"][-1]["success"]):
-                    goal_state.append(self.tdrp(torch.tensor(path["observations"][-1]).to(ptu.device)))
+                    goal_state.append(self.tdrp(torch.unsqueeze(torch.tensor(path["observations"][-1],dtype=torch.double),dim=0).to(ptu.device)))
             print("------------------------")
             print("goal state set length:%d"%len(goal_state))
             print("------------------------")
