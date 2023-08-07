@@ -74,7 +74,7 @@ def multitask_rollout(
     )
 
 def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
-    pdist = torch.nn.PairwiseDistance(p=2)
+    pdist = torch.nn.PairwiseDistance(p=2).to(ptu.device)
     obs = tdrp(torch.unsqueeze(torch.tensor(obs, dtype=torch.float),dim=0).to(ptu.device))
     min_distance = pdist(obs, goal_set[0])
     for state in goal_set:
