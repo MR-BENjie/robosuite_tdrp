@@ -109,8 +109,12 @@ if __name__ == "__main__":
         use_gpu=args.gpu,
     )
 
+    samples = dict()
+    final_state = list()
     goal_state = list()
     for path in paths:
         if (path["env_infos"][-1]["success"]):
             goal_state.append(path["observations"][-1])
-    torch.save(goal_state, os.path.join(args.load_dir, "path.pkl"))
+        final_state.append(path["observations"][-1])
+    torch.save(goal_state, os.path.join(args.load_dir, "path_goal.pkl"))
+    torch.save(final_state, os.path.join(args.load_dic, "path_final.pkl"))
