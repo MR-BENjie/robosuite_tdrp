@@ -8,6 +8,8 @@ import torch
 import imageio
 import os
 import json
+from kmeans_pytorch import kmeans
+import rlkit.torch.pytorch_util as ptu
 
 from signal import signal, SIGINT
 from sys import exit
@@ -106,4 +108,9 @@ if __name__ == "__main__":
         printout=True,
         use_gpu=args.gpu,
     )
-    torch.save(paths, os.path.join(args.load_dir, "path.pkl"))
+
+    goal_state = list()
+    for path in paths:
+        if (path["env_infos"][-1]["success"]):
+            goal_state.append(path["observations"][-1])
+    torch.save(goal_state, os.path.join(args.load_dir, "path.pkl"))

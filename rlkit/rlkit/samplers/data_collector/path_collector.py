@@ -37,16 +37,17 @@ class MdpPathCollector(PathCollector):
         self.log_dir = log_dir
         self.goal_centers = None
         if self.auxiliary_reward:
-            paths = torch.load(os.path.join(self.log_dir,"path.pkl"))
+            paths_final = torch.load(os.path.join(self.log_dir,"path.pkl"))
             goal_state = list()
-            for path in paths:
-                if (path["env_infos"][-1]["success"]):
-                    goal_state.append(self.tdrp(torch.unsqueeze(torch.tensor(path["observations"][-1],dtype=torch.float),dim=0).to(ptu.device)))
+            for ob in paths_final:
+                goal_state.append(self.tdrp(torch.unsqueeze(torch.tensor(ob, dtype=torch.float), dim=0).to(ptu.device)))
             print("------------------------")
-            print("goal state set length:%d"%len(goal_state))
+            print("goal state set length:%d" % len(goal_state))
             print("------------------------")
             cluster_num = 10
-            cluster_ids_x, cluster_centers = kmeans(X=torch.cat(goal_state,dim=0), num_clusters=cluster_num, distance='euclidean', device=torch.device(ptu.device))
+            cluster_ids_x, cluster_centers = kmeans(X=torch.cat(goal_state, dim=0), num_clusters=cluster_num,
+            distance = 'euclidean', device = torch.device(ptu.device))
+
             self.goal_centers = cluster_centers
 
 
