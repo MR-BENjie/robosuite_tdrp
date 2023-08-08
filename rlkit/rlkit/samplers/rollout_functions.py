@@ -96,6 +96,7 @@ def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
         distance = pairwise_distance(obs, state, device)
         if distance<min_distance:
             min_distance = distance
+    min_distance = min_distance.cpu().numpy()
     return reward-min_distance
 
 def rollout(
