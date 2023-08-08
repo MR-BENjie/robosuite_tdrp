@@ -73,12 +73,27 @@ def multitask_rollout(
         full_observations=dict_obs,
     )
 
+def pairwise_distance(data1, data2, device=torch.device('cpu')):
+    # transfer to device
+    data1, data2 = data1.to(device), data2.to(device)
+
+    # N*1*M
+    A = data1.unsqueeze(dim=1)
+
+    # 1*N*M
+    B = data2.unsqueeze(dim=0)
+
+    dis = (A - B) ** 2.0
+    # return N*N matrix for pairwise distance
+    dis = dis.sum(dim=-1).squeeze()
+    return dis
+
 def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
-    pdist = torch.nn.PairwiseDistance(p=2).to(ptu.device)
+    device = torch.device(ptu.device)
     obs = tdrp(torch.unsqueeze(torch.tensor(obs, dtype=torch.float),dim=0).to(ptu.device))
-    min_distance = pdist(obs, goal_set[0].to(ptu.device))
+    min_distance = pairwise_distance(obs, goal_set[0],device)
     for state in goal_set:
-        distance = pdist(obs, state)
+        distance = pairwise_distance(obs, state, device)
         if distance<min_distance:
             min_distance = distance
     return reward-min_distance
