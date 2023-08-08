@@ -119,4 +119,4 @@ if __name__ == "__main__":
     print("final_state:"+str(len(final_state)))
     print("goal_state:"+str(len(goal_state)))
     torch.save(goal_state, os.path.join(args.load_dir, "path_goal.pkl"))
-    torch.save(final_state, os.path.join(args.load_dic, "path_final.pkl"))
+    torch.save(final_state, os.path.join(args.load_dir, "path_final.pkl"))
