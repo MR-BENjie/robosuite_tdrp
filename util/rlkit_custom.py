@@ -326,12 +326,12 @@ def get_custom_generic_path_information(paths, path_length, reward_scale, stat_p
     Grabs cumulative reward specified accumulated at @path_length timestep
     """
     statistics = OrderedDict()
-    returns = [sum(path["rewards"]) for path in paths]
+    returns = [sum(path["env_rewards"]) for path in paths]
 
     # Grab returns accumulated up to specified timestep
-    expl_returns = [sum(path["rewards"][:path_length]) for path in paths]
+    expl_returns = [sum(path["env_rewards"][:path_length]) for path in paths]
 
-    rewards = np.vstack([path["rewards"] for path in paths])
+    rewards = np.vstack([path["env_rewards"] for path in paths])
     # norm_rewards = [path["rewards"] / reward_scale for path in paths]
     statistics.update(eval_util.create_stats_ordered_dict('Rewards', rewards,
                                                 stat_prefix=stat_prefix))
