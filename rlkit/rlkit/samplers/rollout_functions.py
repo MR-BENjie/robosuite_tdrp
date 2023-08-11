@@ -128,6 +128,7 @@ def rollout(
     observations = []
     actions = []
     rewards = []
+    env_rewards = []
     terminals = []
     agent_infos = []
     env_infos = []
@@ -140,6 +141,8 @@ def rollout(
     while path_length < max_path_length:
         a, agent_info = agent.get_action(o)
         next_o, r, d, env_info = env.step(a)
+
+        env_rewards.append(r)
         if auxiliary_reward:
             r = cal_auxiliary_reward(tdrp, goal_set, o, r)
         observations.append(o)
@@ -177,4 +180,5 @@ def rollout(
         terminals=np.array(terminals).reshape(-1, 1),
         agent_infos=agent_infos,
         env_infos=env_infos,
+        env_rewards = np.array(env_rewards).reshape(-1,1),
     )

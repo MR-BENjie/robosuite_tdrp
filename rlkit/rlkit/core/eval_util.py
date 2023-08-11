@@ -15,9 +15,9 @@ def get_generic_path_information(paths, stat_prefix=''):
     Get an OrderedDict with a bunch of statistic names and values.
     """
     statistics = OrderedDict()
-    returns = [sum(path["rewards"]) for path in paths]
+    returns = [sum(path["env_rewards"]) for path in paths]
 
-    rewards = np.vstack([path["rewards"] for path in paths])
+    rewards = np.vstack([path["env_rewards"] for path in paths])
     statistics.update(create_stats_ordered_dict('Rewards', rewards,
                                                 stat_prefix=stat_prefix))
     statistics.update(create_stats_ordered_dict('Returns', returns,
@@ -63,7 +63,7 @@ def get_generic_path_information(paths, stat_prefix=''):
 
 
 def get_average_returns(paths):
-    returns = [sum(path["rewards"]) for path in paths]
+    returns = [sum(path["env_rewards"]) for path in paths]
     return np.mean(returns)
 
 
