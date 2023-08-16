@@ -239,8 +239,8 @@ def add_training_args():
 
     parser.add_argument(
         '--sigma',
-        type=int,
-        default=1,
+        type=float,
+        default=1.0,
         help='coefficient of the auxiliary reward')
 def add_rollout_args():
     """
