@@ -60,6 +60,7 @@ def run_experiment():
             algorithm=args.agent,
             seed=args.seed,
             version="normal",
+            sigma = args.sigma,
             replay_buffer_size=int(1E6),
             qf_kwargs=dict(
                 hidden_sizes=args.qf_hidden_sizes,

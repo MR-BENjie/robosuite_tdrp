@@ -168,14 +168,16 @@ def experiment(variant, agent="SAC"):
         eval_policy,
         auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
         tdrp=tdrp,
-        log_dir=variant["trainer_kwargs"]["tdrp_pkl"]
+        log_dir=variant["trainer_kwargs"]["tdrp_pkl"],
+        sigma=variant["sigma"]
     )
     expl_path_collector = MdpPathCollector(
         expl_env,
         expl_policy,
         auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
         tdrp=tdrp,
-        log_dir=variant["trainer_kwargs"]["tdrp_pkl"]
+        log_dir=variant["trainer_kwargs"]["tdrp_pkl"],
+        sigma=variant["sigma"]
     )
 
     # Define algorithm

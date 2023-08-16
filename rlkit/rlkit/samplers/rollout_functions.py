@@ -88,7 +88,7 @@ def pairwise_distance(data1, data2, device=torch.device('cpu')):
     dis = dis.sum(dim=-1).squeeze()
     return dis
 
-def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
+def cal_auxiliary_reward(tdrp, goal_set, obs , reward, sigma):
     device = torch.device(ptu.device)
     obs = tdrp(torch.unsqueeze(torch.tensor(obs, dtype=torch.float),dim=0).to(ptu.device))
     min_distance = pairwise_distance(obs, goal_set[0],device)
@@ -97,7 +97,8 @@ def cal_auxiliary_reward(tdrp, goal_set, obs , reward):
         if distance<min_distance:
             min_distance = distance
     min_distance = min_distance.cpu().detach().numpy()
-    return reward-min_distance
+    print(min_distance)
+    return reward-sigma*min_distance
 
 def rollout(
         env,
@@ -108,6 +109,7 @@ def rollout(
         auxiliary_reward=False,
         goal_set=None,
         tdrp=None,
+        sigma=1,
 ):
     """
     The following value for the following keys will be a 2D array, with the
@@ -144,7 +146,7 @@ def rollout(
 
         env_rewards.append(r)
         if auxiliary_reward:
-            r = cal_auxiliary_reward(tdrp, goal_set, o, r)
+            r = cal_auxiliary_reward(tdrp, goal_set, o, r, sigma)
         observations.append(o)
         rewards.append(r)
         terminals.append(d)

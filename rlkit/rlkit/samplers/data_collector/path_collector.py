@@ -19,6 +19,7 @@ class MdpPathCollector(PathCollector):
             auxiliary_reward=False,
             tdrp=None,
             log_dir="../log/runs",
+            sigma=1,
     ):
         if render_kwargs is None:
             render_kwargs = {}
@@ -35,6 +36,8 @@ class MdpPathCollector(PathCollector):
         self.auxiliary_reward = auxiliary_reward
         self.tdrp = tdrp
         self.log_dir = log_dir
+        self.sigma = sigma
+
         self.goal_centers = None
         if self.auxiliary_reward:
             paths_final = torch.load(os.path.join(self.log_dir,"path.pkl"))
@@ -70,7 +73,8 @@ class MdpPathCollector(PathCollector):
                 max_path_length=max_path_length_this_loop,
                 auxiliary_reward=self.auxiliary_reward,
                 goal_set=self.goal_centers,
-                tdrp=self.tdrp
+                tdrp=self.tdrp,
+                sigma=self.sigma,
             )
             path_len = len(path['actions'])
             if (

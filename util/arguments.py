@@ -237,7 +237,11 @@ def add_training_args():
         default='../log/runs/',
         help='directory to save runs')
 
-
+    parser.add_argument(
+        '--sigma',
+        type=int,
+        default=1,
+        help='coefficient of the auxiliary reward')
 def add_rollout_args():
     """
     Adds rollout arguments needed for evaluating / visualizing a trained rlkit policy
