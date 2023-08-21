@@ -80,7 +80,8 @@ def experiment(variant, agent="SAC"):
 
     vae = VAE(
         obs_dim = obs_dim,
-        latent_dim= int(obs_dim*2/3)
+        latent_dim= int(obs_dim*2/3),
+        ** variant['qf_kwargs'],
     )
 
     if variant['trainer_kwargs']['auxiliary_reward']:
