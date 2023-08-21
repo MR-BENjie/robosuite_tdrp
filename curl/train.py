@@ -121,6 +121,7 @@ def parse_args():
         action="store_true",
         help='If set,use shard resets for this env'
     )
+
     args = parser.parse_args()
     return args
 
@@ -212,9 +213,6 @@ def get_expl_env_kwargs(args):
         ignore_done=True,
     )
 
-    # Add in additional ones that may not always be specified
-    if args.env_config is not None:
-        env_kwargs["env_configuration"] = args.env_config
     # Lastly, return the dict
     return env_kwargs
 
