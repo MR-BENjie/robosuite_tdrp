@@ -353,11 +353,10 @@ def main():
                 agent.update(replay_buffer, L, step)
 
         next_obs, reward, done, _ = env.step(action)
-
+        if episode_step+1 == args.expl_horizon:
+            done = True
         # allow infinit bootstrap
-        done_bool = 0 if episode_step + 1 == env._max_episode_steps else float(
-            done
-        )
+        done_bool = float(done)
         episode_reward += reward
         replay_buffer.add(obs, action, reward, next_obs, done_bool)
 
