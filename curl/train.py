@@ -8,7 +8,6 @@ import sys
 import random
 import time
 import json
-import dmc2gym
 import copy
 
 import utils
