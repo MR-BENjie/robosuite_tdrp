@@ -137,6 +137,7 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
             video.init(enabled=(i == 0))
             done = False
             episode_reward = 0
+            episode_step = 0
             while not done:
                 # center crop image
                 if args.encoder_type == 'pixel':
@@ -147,6 +148,9 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
                     else:
                         action = agent.select_action(obs)
                 obs, reward, done, _ = env.step(action)
+                episode_step += 1
+                if episode_step == args.expl_horizon:
+                    done = True
                 video.record(env)
                 episode_reward += reward
 
@@ -324,11 +328,11 @@ def main():
 
         if done:
             if step > 0:
-                if step % args.log_interval == 0:
-                    L.log('train/duration', time.time() - start_time, step)
-                    L.dump(step)
+                #if step % args.log_interval == 0:
+                L.log('train/duration', time.time() - start_time, step)
+                L.dump(step)
                 start_time = time.time()
-            if step % args.log_interval == 0:
+            #if step % args.log_interval == 0:
                 L.log('train/episode_reward', episode_reward, step)
 
             obs = env.reset()
