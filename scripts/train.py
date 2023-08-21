@@ -28,6 +28,7 @@ def run_experiment():
     if args.agent == "SAC":
         trainer_kwargs = dict(
             train_tdrp=args.train_tdrp,
+            train_vae=args.train_vae,
             auxiliary_reward=args.auxiliary_reward,
             tdrp_step = args.tdrp_step,
             tdrp_pkl = args.tdrp_pkl,
@@ -70,6 +71,7 @@ def run_experiment():
             ),
             algorithm_kwargs=dict(
                 train_tdrp=args.train_tdrp,
+                train_vae = args.train_vae,
                 auxiliary_reward=args.auxiliary_reward,
                 num_epochs=args.n_epochs,
                 num_eval_steps_per_epoch=args.eval_horizon * args.num_eval,

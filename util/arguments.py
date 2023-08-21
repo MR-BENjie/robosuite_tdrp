@@ -170,13 +170,20 @@ def add_training_args():
         '--train_tdrp',
         type=bool,
         default=False,
-        help='whether to tdrp')
+        help='whether to train tdrp')
+
+    parser.add_argument(
+        '--train_vae',
+        type=bool,
+        default=False,
+        help='whether to train vae')
 
     parser.add_argument(
         '--auxiliary_reward',
         type=bool,
         default=False,
         help='whether to use auxiliary reward created by tdrp')
+
 
     parser.add_argument(
         '--tdrp_step',

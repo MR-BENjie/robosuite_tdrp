@@ -121,3 +121,89 @@ class TanhMlpPolicy(MlpPolicy):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, output_activation=torch.tanh, **kwargs)
+
+class VAE(nn.Module):
+    def __init__(self,
+                 obs_dim: int,
+                 latent_dim: int,
+                 hidden_dims: list = None,
+                 **kwargs) -> None:
+        super().__init__()
+
+        self.latent_dim = latent_dim
+
+        modules = []
+        if hidden_dims is None:
+            hidden_dims = [512, 256, 128, 64]
+
+        # Build Encoder
+        init_dim = obs_dim
+        for h_dim in hidden_dims:
+            modules.append(
+                Mlp(
+                    input_size=init_dim,
+                    output_size= h_dim,
+                    **kwargs,
+                )
+            )
+            init_dim = h_dim
+        modules.append(nn.Linear(hidden_dims[-1], latent_dim))
+        self.encoder = nn.Sequential(*modules)
+
+
+        # Build Decoder
+        modules = []
+        self.decoder_input = nn.Linear(latent_dim, hidden_dims[-1])
+
+        hidden_dims.reverse()
+
+        for i in range(len(hidden_dims) - 1):
+            modules.append(
+                Mlp(
+                    input_size=hidden_dims[i],
+                    output_size=hidden_dims[i+1],
+                    **kwargs,
+                )
+            )
+        self.decoder = nn.Sequential(*modules)
+        self.decoder_output = nn.Linear(hidden_dims[-1], obs_dim)
+
+    def encode(self, input):
+        """
+        Encodes the input by passing through the encoder network
+        and returns the latent codes.
+        :param input: (Tensor) Input tensor to encoder [N x C x H x W]
+         """
+        result = self.encoder(input)
+
+        return
+
+    def decode(self, z) :
+        """
+        Maps the given latent codes
+        onto the image space.
+        :param z: (Tensor) [B x D]
+        :return: (Tensor) [B x C x H x W]
+        """
+        result = self.decoder_input(z)
+        result = self.decoder(result)
+        result = self.decoder_output(result)
+        return result
+
+    def forward(self, input):
+        result = self.encode(input)
+        return  result
+
+    def loss_function(self,
+                      input):
+        """
+        Computes the VAE loss function.
+        KL(N(\mu, \sigma), N(0, 1)) = \log \frac{1}{\sigma} + \frac{\sigma^2 + \mu^2}{2} - \frac{1}{2}
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        encode_output = self.encode(input)
+        recons = self.decode(encode_output)
+        recons_loss =F.mse_loss(recons, input)
+        return recons_loss

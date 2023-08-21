@@ -22,8 +22,10 @@ class SACTrainer(TorchTrainer):
             target_qf1,
             target_qf2,
             tdrp,
+            vae,
 
             train_tdrp=False,
+            train_vae = False,
             auxiliary_reward=False,
             tdrp_step=10,
             tdrp_pkl="../log/runs",
@@ -54,6 +56,7 @@ class SACTrainer(TorchTrainer):
         self.target_update_period = target_update_period
 
         self.tdrp = tdrp
+        self.vae = vae
 
         self.use_automatic_entropy_tuning = use_automatic_entropy_tuning
         if self.use_automatic_entropy_tuning:
@@ -90,6 +93,12 @@ class SACTrainer(TorchTrainer):
             self.tdrp_criterion = nn.MSELoss()
             self.tdrp_optimizer = optimizer_class(
                 self.tdrp.parameters(),
+                lr = qf_lr,
+            )
+        if train_vae:
+            self.vae_criterion = self.vae.loss_function
+            self.vae_optimizer = optimizer_class(
+                self.vae.parameters(),
                 lr = qf_lr,
             )
 
@@ -258,6 +267,16 @@ class SACTrainer(TorchTrainer):
         if self._need_to_update_eval_statistics:
             self.eval_statistics['tdrp Loss'] = loss.cpu().detach().numpy()
 
+    def train_vae_from_torch(self, batch):
+        batch = np_to_pytorch_batch(batch)
+
+        obs = batch['observations']
+
+        vae_loss = self.vae_criterion(obs)
+        self.vae_optimizer.zero_grad()
+        vae_loss.backward()
+        self.vae_optimizer.step()
+
     def get_diagnostics(self):
         return self.eval_statistics
 
@@ -272,7 +291,8 @@ class SACTrainer(TorchTrainer):
             self.qf2,
             self.target_qf1,
             self.target_qf2,
-            self.tdrp
+            self.tdrp,
+            self.vae,
         ]
 
     def get_snapshot(self):
@@ -283,4 +303,5 @@ class SACTrainer(TorchTrainer):
             target_qf1=self.qf1,
             target_qf2=self.qf2,
             tdrp=self.tdrp,
+            vae=self.vae,
         )

@@ -178,6 +178,7 @@ class CustomBatchRLAlgorithm(CustomBaseRLAlgorithm, metaclass=abc.ABCMeta):
             num_train_loops_per_epoch=1,
             min_num_steps_before_training=0,
             train_tdrp=False,
+            train_vae =False,
             auxiliary_reward=False,
     ):
         super().__init__(
@@ -198,6 +199,7 @@ class CustomBatchRLAlgorithm(CustomBaseRLAlgorithm, metaclass=abc.ABCMeta):
         self.num_expl_steps_per_train_loop = num_expl_steps_per_train_loop
         self.min_num_steps_before_training = min_num_steps_before_training
         self.train_tdrp = train_tdrp
+        self.train_vae = train_vae
         self.auxiliary_reward = auxiliary_reward
     def _train(self):
         if self.min_num_steps_before_training > 0:
@@ -224,6 +226,12 @@ class CustomBatchRLAlgorithm(CustomBaseRLAlgorithm, metaclass=abc.ABCMeta):
                 tdrp_traindata=self.replay_buffer.horizon_bath(horizon_length=self.expl_max_path_length)
                 if tdrp_traindata is not None:
                     self.trainer.train_tdrp_from_torch(tdrp_traindata)
+
+            if self.train_vae:
+                vae_traindata = self.replay_buffer.horizon_bath(horizon_length=self.expl_max_path_length)
+                if vae_traindata is not None:
+                    self.trainer.train_vae_from_torch(vae_traindata)
+                self._end_epoch(epoch)
 
             for _ in range(self.num_train_loops_per_epoch):
                 new_expl_paths = self.expl_data_collector.collect_new_paths(

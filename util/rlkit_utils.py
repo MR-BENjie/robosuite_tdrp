@@ -10,7 +10,7 @@ from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.torch.sac.policies import TanhGaussianPolicy, MakeDeterministic
 from rlkit.torch.sac.sac import SACTrainer
 from rlkit.torch.td3.td3 import TD3Trainer
-from rlkit.torch.networks import FlattenMlp, TanhMlpPolicy, Mlp
+from rlkit.torch.networks import FlattenMlp, TanhMlpPolicy, Mlp, VAE
 from rlkit.exploration_strategies.base import PolicyWrappedWithExplorationStrategy
 from rlkit.exploration_strategies.gaussian_strategy import GaussianStrategy
 from util.rlkit_custom import CustomTorchBatchRLAlgorithm
@@ -78,6 +78,11 @@ def experiment(variant, agent="SAC"):
         **variant['qf_kwargs'],
     )
 
+    vae = VAE(
+        obs_dim = obs_dim,
+        latent_dim= int(obs_dim*2/3)
+    )
+
     if variant['trainer_kwargs']['auxiliary_reward']:
         map_location = torch.device("cuda")
         tdrp_param = torch.load(os.path.join(variant["trainer_kwargs"]["tdrp_pkl"],"params.pkl"),map_location=map_location)
@@ -125,6 +130,7 @@ def experiment(variant, agent="SAC"):
             target_qf1=target_qf1,
             target_qf2=target_qf2,
             tdrp = tdrp,
+            vae = vae,
             **variant['trainer_kwargs']
         )
     elif agent == "TD3":
