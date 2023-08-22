@@ -268,7 +268,7 @@ def main():
     # make directory
     ts = time.gmtime() 
     ts = time.strftime("%m-%d", ts)    
-    env_name = args.env + '-' + str(args.robots) + '-' + args.controller
+    env_name = args.env + '-' + args.robots + '-' + args.controller
     exp_name = env_name + '-' + ts + '-im' + str(args.image_size) +'-b'  \
     + str(args.batch_size) + '-s' + str(args.seed)  + '-' + args.encoder_type
     args.work_dir = args.work_dir + '/'  + exp_name
