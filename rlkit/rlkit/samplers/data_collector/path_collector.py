@@ -43,7 +43,7 @@ class MdpPathCollector(PathCollector):
             paths_final = torch.load(os.path.join(self.log_dir,"path.pkl"))
             goal_state = list()
             for ob in paths_final:
-                goal_state.append(self.tdrp(torch.unsqueeze(torch.tensor(ob, dtype=torch.double), dim=0).to(ptu.device)))
+                goal_state.append(self.tdrp(torch.unsqueeze(torch.tensor(ob, dtype=torch.float), dim=0).to(ptu.device)))
             print("------------------------")
             print("goal state set length:%d" % len(goal_state))
             print("------------------------")
