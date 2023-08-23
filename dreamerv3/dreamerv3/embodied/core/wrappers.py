@@ -99,7 +99,8 @@ class OneHotAction(base.Wrapper):
     self._count = int(env.act_space[key].high)
     self._key = key
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     shape = (self._count,)
     space = spacelib.Space(np.float32, shape, 0, 1)
@@ -142,11 +143,13 @@ class ExpandScalars(base.Wrapper):
         self._act_expanded.append(key)
       self._act_space[key] = space
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def obs_space(self):
     return self._obs_space
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     return self._act_space
 
@@ -177,7 +180,8 @@ class FlattenTwoDimObs(base.Wrapper):
         self._keys.append(key)
       self._obs_space[key] = space
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def obs_space(self):
     return self._obs_space
 
@@ -204,7 +208,8 @@ class FlattenTwoDimActions(base.Wrapper):
         self._origs[key] = space.shape
       self._act_space[key] = space
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     return self._act_space
 
@@ -250,7 +255,8 @@ class DiscretizeAction(base.Wrapper):
     self._values = np.linspace(-1, 1, bins)
     self._key = key
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     shape = (self._dims, len(self._values))
     space = spacelib.Space(np.float32, shape, 0, 1)
@@ -289,7 +295,8 @@ class ResizeImage(base.Wrapper):
       from PIL import Image
       self._Image = Image
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def obs_space(self):
     spaces = self.env.obs_space
     for key in self._keys:
@@ -317,7 +324,8 @@ class RenderImage(base.Wrapper):
     self._key = key
     self._shape = self.env.render().shape
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def obs_space(self):
     spaces = self.env.obs_space
     spaces[self._key] = spacelib.Space(np.uint8, self._shape)
