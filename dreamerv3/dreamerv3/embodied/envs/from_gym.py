@@ -24,7 +24,8 @@ class FromGym(embodied.Env):
   def info(self):
     return self._info
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def obs_space(self):
     if self._obs_dict:
       spaces = self._flatten(self._env.observation_space.spaces)
@@ -39,7 +40,8 @@ class FromGym(embodied.Env):
         'is_terminal': embodied.Space(bool),
     }
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     if self._act_dict:
       spaces = self._flatten(self._env.action_space.spaces)
