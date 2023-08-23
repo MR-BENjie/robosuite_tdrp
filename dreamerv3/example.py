@@ -3,6 +3,7 @@ from robosuite.controllers import load_controller_config, ALL_CONTROLLERS
 import robosuite as suite
 from rlkit.envs.wrappers import NormalizedBoxEnv
 from robosuite.wrappers import GymWrapper
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -75,6 +76,9 @@ def main():
   import warnings
   import dreamerv3
   from dreamerv3 import embodied
+  args = parse_args()
+  sys.argv = sys.argv[:-2]
+
   warnings.filterwarnings('ignore', '.*truncated to dtype int32.*')
 
   # See configs.yaml for all options.
@@ -107,7 +111,7 @@ def main():
   import crafter
   from embodied.envs import from_gym
 
-  args = parse_args()
+
   expl_environment_kwargs = get_expl_env_kwargs(args)
   controller = expl_environment_kwargs.pop("controller")
   if controller in set(ALL_CONTROLLERS):
