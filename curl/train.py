@@ -128,7 +128,7 @@ def parse_args():
 
 def evaluate(env, agent, video, num_episodes, L, step, args):
     all_ep_rewards = []
-
+    all_reward = []
     def run_eval_loop(sample_stochastically=True):
         start_time = time.time()
         prefix = 'stochastic_' if sample_stochastically else ''
@@ -151,11 +151,13 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
                 episode_step += 1
                 if episode_step == args.expl_horizon:
                     done = True
+                    all_reward.append(reward)
                 video.record(env)
                 episode_reward += reward
 
             video.save('%d.mp4' % step)
             L.log('eval/' + prefix + 'episode_reward', episode_reward, step)
+            L.log('eval/' + prefix + 'final_reward', all_reward[-1], step)
             all_ep_rewards.append(episode_reward)
         
         L.log('eval/' + prefix + 'eval_time', time.time()-start_time , step)
@@ -163,6 +165,11 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
         best_ep_reward = np.max(all_ep_rewards)
         L.log('eval/' + prefix + 'mean_episode_reward', mean_ep_reward, step)
         L.log('eval/' + prefix + 'best_episode_reward', best_ep_reward, step)
+
+        mean_reward = np.mean(all_reward)
+        best_reward = np.max(all_reward)
+        L.log('eval/' + prefix + 'mean_reward', mean_reward, step)
+        L.log('eval/' + prefix + 'best_reward', best_reward, step)
 
     run_eval_loop(sample_stochastically=False)
     L.dump(step)
@@ -268,7 +275,7 @@ def main():
     # make directory
     ts = time.gmtime() 
     ts = time.strftime("%m-%d", ts)    
-    env_name = args.env + '-' + args.robots + '-' + args.controller
+    env_name = args.env + '-' + str(args.robots) + '-' + args.controller
     exp_name = env_name + '-' + ts + '-im' + str(args.image_size) +'-b'  \
     + str(args.batch_size) + '-s' + str(args.seed)  + '-' + args.encoder_type
     args.work_dir = args.work_dir + '/'  + exp_name
@@ -313,6 +320,7 @@ def main():
     L = Logger(args.work_dir, use_tb=args.save_tb)
 
     episode, episode_reward, done = 0, 0, True
+    reward = 0
     start_time = time.time()
 
     for step in range(args.num_train_steps):
@@ -340,9 +348,9 @@ def main():
             episode_reward = 0
             episode_step = 0
             episode += 1
-            if step % args.log_interval == 0:
-                L.log('train/episode', episode, step)
-
+            #if step % args.log_interval == 0:
+            L.log('train/episode', episode, step)
+            L.log('train/reward', reward, step)
         # sample action for data collection
         if step < args.init_steps:
             action = env.action_space.sample()
