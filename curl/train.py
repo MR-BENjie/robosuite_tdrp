@@ -138,6 +138,7 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
             done = False
             episode_reward = 0
             episode_step = 0
+            reward = 0
             while not done:
                 # center crop image
                 if args.encoder_type == 'pixel':
@@ -151,14 +152,14 @@ def evaluate(env, agent, video, num_episodes, L, step, args):
                 episode_step += 1
                 if episode_step == args.expl_horizon:
                     done = True
-                    all_reward.append(reward)
                 video.record(env)
                 episode_reward += reward
 
             video.save('%d.mp4' % step)
             L.log('eval/' + prefix + 'episode_reward', episode_reward, step)
-            L.log('eval/' + prefix + 'final_reward', all_reward[-1], step)
+            L.log('eval/' + prefix + 'final_reward', reward, step)
             all_ep_rewards.append(episode_reward)
+            all_reward.append(reward)
         
         L.log('eval/' + prefix + 'eval_time', time.time()-start_time , step)
         mean_ep_reward = np.mean(all_ep_rewards)
