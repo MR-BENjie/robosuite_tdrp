@@ -78,7 +78,8 @@ class NormalizeAction(base.Wrapper):
     self._low = np.where(self._mask, self._space.low, -1)
     self._high = np.where(self._mask, self._space.high, 1)
 
-  @functools.cached_property
+  #@functools.cached_property
+  @property
   def act_space(self):
     low = np.where(self._mask, -np.ones_like(self._low), self._low)
     high = np.where(self._mask, np.ones_like(self._low), self._high)
