@@ -176,7 +176,7 @@ class VAE(nn.Module):
          """
         result = self.encoder(input)
 
-        return
+        return result
 
     def decode(self, z) :
         """
