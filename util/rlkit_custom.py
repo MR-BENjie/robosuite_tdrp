@@ -231,7 +231,7 @@ class CustomBatchRLAlgorithm(CustomBaseRLAlgorithm, metaclass=abc.ABCMeta):
                 vae_traindata = self.replay_buffer.horizon_bath(horizon_length=self.expl_max_path_length)
                 if vae_traindata is not None:
                     self.trainer.train_vae_from_torch(vae_traindata)
-                self._end_epoch(epoch)
+                #self._end_epoch(epoch)
 
             for _ in range(self.num_train_loops_per_epoch):
                 new_expl_paths = self.expl_data_collector.collect_new_paths(
