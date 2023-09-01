@@ -179,6 +179,12 @@ def add_training_args():
         help='whether to train vae')
 
     parser.add_argument(
+        '--vae_reward',
+        type=bool,
+        default=False,
+        help='whether to train vae')
+
+    parser.add_argument(
         '--auxiliary_reward',
         type=bool,
         default=False,

@@ -62,6 +62,7 @@ def run_experiment():
             seed=args.seed,
             version="normal",
             sigma = args.sigma,
+            vae_reward = args.vae_reward,
             replay_buffer_size=int(1E6),
             qf_kwargs=dict(
                 hidden_sizes=args.qf_hidden_sizes,

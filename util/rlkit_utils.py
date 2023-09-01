@@ -88,7 +88,10 @@ def experiment(variant, agent="SAC"):
         map_location = torch.device("cuda")
         tdrp_param = torch.load(os.path.join(variant["trainer_kwargs"]["tdrp_pkl"],"params.pkl"),map_location=map_location)
         tdrp = tdrp_param["trainer/tdrp"]
-
+    if variant['vae_reward']:
+        map_location = torch.device("cuda")
+        tdrp_param = torch.load(os.path.join(variant["trainer_kwargs"]["tdrp_pkl"], "params.pkl"), map_location=map_location)
+        vae = tdrp_param["trainer/vae"]
 
     target_qf1 = FlattenMlp(
         input_size=obs_dim + action_dim,
@@ -176,7 +179,9 @@ def experiment(variant, agent="SAC"):
         auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
         tdrp=tdrp,
         log_dir=variant["trainer_kwargs"]["tdrp_pkl"],
-        sigma=variant["sigma"]
+        sigma=variant["sigma"],
+        vae_reward = variant["vae_reward"],
+        vae = vae
     )
     expl_path_collector = MdpPathCollector(
         expl_env,
@@ -184,7 +189,9 @@ def experiment(variant, agent="SAC"):
         auxiliary_reward=variant['trainer_kwargs']['auxiliary_reward'],
         tdrp=tdrp,
         log_dir=variant["trainer_kwargs"]["tdrp_pkl"],
-        sigma=variant["sigma"]
+        sigma=variant["sigma"],
+        vae_reward = variant["vae_reward"],
+        vae = vae
     )
 
     # Define algorithm

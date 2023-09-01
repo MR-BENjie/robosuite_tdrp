@@ -20,6 +20,8 @@ class MdpPathCollector(PathCollector):
             tdrp=None,
             log_dir="../log/runs",
             sigma=1,
+            vae_reward=False,
+            vae=None,
     ):
         if render_kwargs is None:
             render_kwargs = {}
@@ -38,6 +40,9 @@ class MdpPathCollector(PathCollector):
         self.log_dir = log_dir
         self.sigma = sigma
 
+        self.vae_reward = vae_reward
+        self.vae = vae
+
         self.goal_centers = None
         if self.auxiliary_reward:
             paths_final = torch.load(os.path.join(self.log_dir,"path.pkl"))
@@ -52,7 +57,18 @@ class MdpPathCollector(PathCollector):
             distance = 'euclidean', device = torch.device(ptu.device))
 
             self.goal_centers = cluster_centers
-
+        if self.vae_reward:
+            paths_final = torch.load(os.path.join(self.log_dir, "path.pkl"))
+            goal_state = list()
+            for ob in paths_final:
+                goal_state.append(self.vae.encode(torch.unsqueeze(torch.tensor(ob, dtype=torch.float), dim=0).to(ptu.device)))
+            print("------------------------")
+            print("goal state set length:%d" % len(goal_state))
+            print("------------------------")
+            cluster_num = 10
+            cluster_ids_x, cluster_centers = kmeans(X=torch.cat(goal_state, dim=0), num_clusters=cluster_num,
+                                                    distance='euclidean', device=torch.device(ptu.device))
+            self.goal_centers = cluster_centers
 
     def collect_new_paths(
             self,
@@ -75,6 +91,8 @@ class MdpPathCollector(PathCollector):
                 goal_set=self.goal_centers,
                 tdrp=self.tdrp,
                 sigma=self.sigma,
+                vae_reward = self.vae_reward,
+                vae= self.vae,
             )
             path_len = len(path['actions'])
             if (

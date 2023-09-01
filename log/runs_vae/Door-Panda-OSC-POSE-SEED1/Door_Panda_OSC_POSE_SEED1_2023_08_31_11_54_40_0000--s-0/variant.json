@@ -1,0 +1,67 @@
+{
+  "algorithm": "SAC",
+  "algorithm_kwargs": {
+    "auxiliary_reward": false,
+    "batch_size": 256,
+    "eval_max_path_length": 500,
+    "expl_max_path_length": 500,
+    "min_num_steps_before_training": 1000,
+    "num_epochs": 1500,
+    "num_eval_steps_per_epoch": 5000,
+    "num_expl_steps_per_train_loop": 5000,
+    "num_trains_per_train_loop": 1000,
+    "train_tdrp": false,
+    "train_vae": true
+  },
+  "eval_environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "Door",
+    "hard_reset": false,
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "robots": "Panda"
+  },
+  "expl_environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "Door",
+    "hard_reset": false,
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "robots": "Panda"
+  },
+  "model_weights": "",
+  "policy_kwargs": {
+    "hidden_sizes": [
+      256,
+      256
+    ]
+  },
+  "qf_kwargs": {
+    "hidden_sizes": [
+      256,
+      256
+    ]
+  },
+  "replay_buffer_size": 1000000,
+  "seed": 1,
+  "sigma": 1.0,
+  "trainer_kwargs": {
+    "auxiliary_reward": false,
+    "discount": 0.99,
+    "policy_lr": 0.0003,
+    "qf_lr": 0.0003,
+    "reward_scale": 1.0,
+    "soft_target_tau": 0.005,
+    "target_update_period": 1,
+    "tdrp_pkl": "../log/tdrp/",
+    "tdrp_step": 10,
+    "train_tdrp": false,
+    "train_vae": true,
+    "use_automatic_entropy_tuning": true
+  },
+  "version": "normal"
+}

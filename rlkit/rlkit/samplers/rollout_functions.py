@@ -98,7 +98,9 @@ def cal_auxiliary_reward(tdrp, goal_set, obs , reward, sigma):
             min_distance = distance
     min_distance = min_distance.cpu().detach().numpy()
     min_distance = min_distance*sigma
-    #print(min_distance)
+    print(reward,end="     ")
+    print(min_distance)
+
     return reward-min_distance
 
 def rollout(
@@ -111,6 +113,8 @@ def rollout(
         goal_set=None,
         tdrp=None,
         sigma=1,
+        vae_reward=False,
+        vae=None,
 ):
     """
     The following value for the following keys will be a 2D array, with the
@@ -148,6 +152,8 @@ def rollout(
         env_rewards.append(r)
         if auxiliary_reward:
             r = cal_auxiliary_reward(tdrp, goal_set, o, r, sigma)
+        if vae_reward:
+            r = cal_auxiliary_reward(vae, goal_set, o, r, sigma)
         observations.append(o)
         rewards.append(r)
         terminals.append(d)
