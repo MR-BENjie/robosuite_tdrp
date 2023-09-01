@@ -84,14 +84,21 @@ def main():
   # See configs.yaml for all options.
   config = embodied.Config(dreamerv3.configs['defaults'])
   config = config.update(dreamerv3.configs['medium'])
+
+  import datetime
+  now = datetime.datetime.now()
+  formatted_date = now.strftime("%Y_%m_%d_%H_%M_%S")
+
   config = config.update({
-      'logdir': '~/logdir/run1',
+      'logdir': "./log/"+args.env+" "+args.robots+" "+formatted_date,
       'run.train_ratio': 64,
       'run.log_every': 30,  # Seconds
       'batch_size': 16,
       'jax.prealloc': False,
-      'encoder.mlp_keys': '$^',
-      'decoder.mlp_keys': '$^',
+      #'encoder.mlp_keys': '$^',
+      #'decoder.mlp_keys': '$^',
+      'encoder.mlp_keys': '.*',
+      'decoder.mlp_keys': '.*',
       'encoder.cnn_keys': 'image',
       'decoder.cnn_keys': 'image',
       # 'jax.platform': 'cpu',
