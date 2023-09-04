@@ -41,16 +41,28 @@ def get_expl_env_kwargs(args):
     """
     Grabs the robosuite-specific arguments and converts them into an rlkit-compatible dict for exploration env
     """
-    env_kwargs = dict(
-        env_name=args.env,
-        robots=args.robots,
-        horizon=args.expl_horizon,
-        control_freq=args.policy_freq,
-        controller=args.controller,
-        reward_scale=args.reward_scale,
-        hard_reset=args.hard_reset,
-        ignore_done=True,
-    )
+    if args.robots == "Panda+Panda":
+        env_kwargs = dict(
+            env_name=args.env,
+            robots=['Panda', 'Panda'],
+            horizon=args.expl_horizon,
+            control_freq=args.policy_freq,
+            controller=args.controller,
+            reward_scale=args.reward_scale,
+            hard_reset=args.hard_reset,
+            ignore_done=True,
+        )
+    else:
+        env_kwargs = dict(
+            env_name=args.env,
+            robots=args.robots,
+            horizon=args.expl_horizon,
+            control_freq=args.policy_freq,
+            controller=args.controller,
+            reward_scale=args.reward_scale,
+            hard_reset=args.hard_reset,
+            ignore_done=True,
+        )
 
     # Lastly, return the dict
     return env_kwargs
@@ -391,6 +403,7 @@ def main(args: DictConfig) -> None:
     torch.cuda.set_device(args.gpuid)
     utils.set_seed_everywhere(args.seed)
 
+
     expl_environment_kwargs = get_expl_env_kwargs(args)
     controller = expl_environment_kwargs.pop("controller")
     if controller in set(ALL_CONTROLLERS):
@@ -400,6 +413,7 @@ def main(args: DictConfig) -> None:
         # This is a string to the custom controller
         controller_config = load_controller_config(custom_fpath=controller)
     # Create robosuite env and append to our list
+
     suite_env = suite.make(**expl_environment_kwargs,
                            has_renderer=False,
                            has_offscreen_renderer=False,
