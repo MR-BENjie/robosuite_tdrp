@@ -253,6 +253,9 @@ class ReplayBuffer(Dataset):
         rewards = torch.as_tensor(self.rewards[idxs], device=self.device)
         next_obses = torch.as_tensor(next_obses, device=self.device).float()
         not_dones = torch.as_tensor(self.not_dones[idxs], device=self.device)
+
+
+
         return obses, actions, rewards, next_obses, not_dones
 
     def sample(self):

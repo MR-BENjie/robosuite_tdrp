@@ -672,6 +672,7 @@ class MTMSacAgent(object):
         if self.encoder_type == 'pixel':
             elements = replay_buffer.sample_spr()
             obs, action, reward, next_obs, not_done, mtm_kwargs = elements
+            self.update_mtm(mtm_kwargs, L, step)
         else:
             elements = replay_buffer.sample_proprio()
             obs, action, reward, next_obs, not_done = elements
@@ -680,7 +681,8 @@ class MTMSacAgent(object):
             L.log('train/batch_reward', reward.mean(), step)
         
         self.update_critic(obs, action, reward, next_obs, not_done, L, step)
-        self.update_mtm(mtm_kwargs, L, step)
+
+
 
         if step % self.actor_update_freq == 0:
             self.update_actor_and_alpha(obs, L, step)
