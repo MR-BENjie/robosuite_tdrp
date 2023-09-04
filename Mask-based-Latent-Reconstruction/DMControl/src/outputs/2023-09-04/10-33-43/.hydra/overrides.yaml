@@ -1,0 +1,5 @@
+- seed=1
+- env=Door
+- agent=mtm_sac
+- work_dir=log
+- wandb=false
