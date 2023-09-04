@@ -16,7 +16,7 @@ hydra-core
 kornia==0.4.1
 #wandb
 #tensorboard
-kornia
+#kornia
 #numpy==1.19
 timm
 tqdm
