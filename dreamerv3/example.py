@@ -18,7 +18,8 @@ def parse_args():
         '--robots',
         nargs="+",
         type=str,
-        default='Panda',
+        #default="Panda",
+        default=['Panda', 'Panda'],
         help='Robot(s) to run with')
 
     parser.add_argument(
@@ -90,7 +91,7 @@ def main():
   formatted_date = now.strftime("%Y_%m_%d_%H_%M_%S")
 
   config = config.update({
-      'logdir': "./log/"+args.env+" "+args.robots+" "+formatted_date,
+      #'logdir': "./log/"+args.env+" "+str(args.robots)+" "+formatted_date,
       'run.train_ratio': 64,
       'run.log_every': 30,  # Seconds
       'batch_size': 16,

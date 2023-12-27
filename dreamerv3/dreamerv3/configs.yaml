@@ -3,7 +3,7 @@ defaults:
   seed: 0
   method: name
   task: dummy_disc
-  logdir: /dev/null
+  logdir: ./log/TwoArmPegInHole ['Panda', 'Panda'] 2023_09_05_20_39_23
   replay: uniform
   replay_size: 1e6
   replay_online: False
@@ -24,7 +24,7 @@ defaults:
 
   run:
     script: train
-    steps: 1e6
+    steps: 2e6
     expl_until: 0
     log_every: 300
     save_every: 900
