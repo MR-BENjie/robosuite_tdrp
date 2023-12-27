@@ -27,6 +27,7 @@ def run_experiment():
     trainer_kwargs = None
     if args.agent == "SAC":
         trainer_kwargs = dict(
+            train_bipars =args.train_bipars,
             train_tdrp=args.train_tdrp,
             train_vae=args.train_vae,
             auxiliary_reward=args.auxiliary_reward,

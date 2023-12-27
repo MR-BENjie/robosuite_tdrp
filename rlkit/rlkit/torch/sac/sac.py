@@ -24,6 +24,7 @@ class SACTrainer(TorchTrainer):
             tdrp,
             vae,
 
+            train_bipars=False,
             train_tdrp=False,
             train_vae = False,
             auxiliary_reward=False,
@@ -54,6 +55,8 @@ class SACTrainer(TorchTrainer):
         self.target_qf2 = target_qf2
         self.soft_target_tau = soft_target_tau
         self.target_update_period = target_update_period
+
+        self.train_bipars = train_bipars
 
         self.tdrp = tdrp
         self.vae = vae
@@ -136,11 +139,28 @@ class SACTrainer(TorchTrainer):
         else:
             alpha_loss = 0
             alpha = 1
+        if self.train_bipars:
+            q_value = torch.min(
+                self.qf1(obs, new_obs_actions),
+                self.qf2(obs, new_obs_actions),
+            )
+            new_next_actions, _, _, new_log_pi, *_ = self.policy(
+                next_obs, reparameterize=True, return_log_prob=True,
+            )
+            q_next_value = torch.min(
+                self.qf1(next_obs, new_next_actions),
+                self.qf2(next_obs, new_next_actions),
+            )
+            f_value = q_value-self.discount*q_next_value
+            q_new_actions = rewards+q_value*f_value
 
-        q_new_actions = torch.min(
-            self.qf1(obs, new_obs_actions),
-            self.qf2(obs, new_obs_actions),
-        )
+        else:
+            q_new_actions = torch.min(
+                self.qf1(obs, new_obs_actions),
+                self.qf2(obs, new_obs_actions),
+            )
+
+
         policy_loss = (alpha*log_pi - q_new_actions).mean()
 
         """

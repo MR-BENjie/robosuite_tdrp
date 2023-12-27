@@ -167,6 +167,12 @@ def add_training_args():
     Adds training parameters used during the experiment run
     """
     parser.add_argument(
+        '--train_bipars',
+        type=bool,
+        default=False,
+        help='whether to train vae')
+
+    parser.add_argument(
         '--train_tdrp',
         type=bool,
         default=False,
